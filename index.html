@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pelle — Tour Virtual</title>
+  <style>
+    @font-face {
+      font-family: 'Jost';
+      src: url('assets/fonts/jost-variable.woff2') format('woff2');
+      font-weight: 300 500;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Cormorant Garamond';
+      src: url('assets/fonts/cormorant-garamond-500.woff2') format('woff2');
+      font-weight: 500;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Cormorant Garamond';
+      src: url('assets/fonts/cormorant-garamond-500-italic.woff2') format('woff2');
+      font-weight: 500;
+      font-style: italic;
+    }
+    :root {
+      --bg: #0e0c0b;
+      --panel: #171412;
+      --line: #2c2622;
+      --text: #f2ebe0;
+      --muted: #a89c8c;
+      --gold: #d9c29a;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Jost', system-ui, sans-serif; }
+    body { min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 24px 16px 40px; }
+    header { width: 100%; max-width: 1280px; display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 16px; gap: 12px; flex-wrap: wrap; }
+    header h1 { font-weight: 400; font-size: 28px; margin: 0; letter-spacing: .02em; }
+    header p { margin: 0; color: var(--muted); font-size: 14px; letter-spacing: .12em; text-transform: uppercase; }
+    .stage { position: relative; width: 100%; max-width: 1280px; aspect-ratio: 16 / 9; background: #000; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+    .stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+    .overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,.35); color: var(--text); font-size: 15px; letter-spacing: .14em; text-transform: uppercase; }
+    .overlay[hidden] { display: none; }
+    .controls { width: 100%; max-width: 1280px; display: flex; align-items: center; gap: 12px; margin-top: 14px; flex-wrap: wrap; }
+    button { font: inherit; font-size: 14px; color: var(--text); background: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 9px 16px; cursor: pointer; letter-spacing: .06em; }
+    button:hover { border-color: var(--gold); }
+    button.primary { background: var(--gold); color: #1b1612; border-color: var(--gold); }
+    button:disabled { opacity: .5; cursor: default; }
+    input[type=range] { flex: 1 1 240px; accent-color: var(--gold); }
+    .time { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 14px; min-width: 110px; text-align: right; }
+    .status { width: 100%; max-width: 1280px; margin-top: 10px; color: var(--muted); font-size: 13px; min-height: 18px; }
+    progress { width: 220px; accent-color: var(--gold); }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Pelle</h1>
+    <p>Tour virtual · revestimentos efeito mármore</p>
+  </header>
+
+  <div class="stage">
+    <canvas id="video" width="1920" height="1080"></canvas>
+    <div class="overlay" id="loading">Carregando…</div>
+  </div>
+
+  <div class="controls">
+    <button id="play" disabled>Pausar</button>
+    <button id="restart" disabled>Reiniciar</button>
+    <input id="seek" type="range" min="0" max="33.1" step="0.01" value="0" disabled>
+    <span class="time" id="time">0.0 / 33.1 s</span>
+    <button id="export" class="primary" disabled>Exportar vídeo</button>
+    <progress id="progress" max="1" value="0" hidden></progress>
+  </div>
+  <div class="status" id="status"></div>
+
+  <script src="src/vendor/mp4-muxer.js"></script>
+  <script src="src/vendor/webm-muxer.js"></script>
+  <script src="src/marble.js"></script>
+  <script src="src/tour.js"></script>
+  <script src="src/player.js"></script>
+</body>
+</html>
