@@ -1,44 +1,46 @@
-# Pelle — Tour virtual (vídeo em JavaScript)
+# Pelle — Tour cinematográfico (vídeo em JavaScript)
 
-Vídeo 16:9 (1920×1080, 30 fps, ~33 s) gerado 100% em JavaScript/Canvas. É um
-plano-sequência em primeira pessoa, estilo drone FPV, que destaca as **placas de
-revestimento efeito mármore** da Pelle.
+Vídeo 16:9 (1920×1080, 24 fps, 31,5 s) gerado 100% em JavaScript/Canvas: um
+plano-sequência em primeira pessoa, estilo drone FPV com gimbal, **sem textos e
+sem cortes**, que percorre o imóvel valorizando as placas de revestimento efeito
+mármore.
 
 **Vídeo pronto:** [`video/pelle-tour.mp4`](video/pelle-tour.mp4)
 
 ## Roteiro
 
-| Tempo | Cena | Câmera |
-|---|---|---|
-| 0,0 – 3,1 s | Fachada com portal em mármore Nero e logo Pelle | Avanço **rápido**; a porta de duas folhas se abre e o drone atravessa |
-| 3,1 – 8,4 s | Recepção | Desacelera e se aproxima do painel de mármore (destaque "Mármore Nero") |
-| 8,4 – 9,2 s | Transição | Giro lateral passando por trás de uma parede (sem corte) |
-| 9,2 – 15,9 s | Sala de reuniões | **Close lento**: parede de mármore e depois o tampo da mesa |
-| 15,9 – 16,8 s | Transição | Voo rápido atravessando um batente |
-| 16,8 – 20,9 s | Banheiro | Passagem rápida até o frontão em ônix |
-| 20,9 – 21,6 s | Transição | Giro **rápido** para o quarto |
-| 21,6 – 33,1 s | Quarto | Painel de ônix retroiluminado e encerramento com a marca |
+| Tempo | Movimento |
+|---|---|
+| 0 – 3,2 s | Fachada em mármore escuro; as portas de vidro automáticas se abrem e a câmera entra rápido |
+| 3,2 – 8,2 s | Recepção: deslize suave até o painel de mármore |
+| 8,2 – 9,5 s | Giro à direita atravessando a divisória de vidro |
+| 9,5 – 16 s | Sala de reuniões: aproximação lenta da parede e da mesa de mármore |
+| 16 – 17,3 s | Giro rápido à esquerda, passando pela porta do banheiro |
+| 17,3 – 20,9 s | Banheiro: frontão em ônix |
+| 20,9 – 22,1 s | Giro rápido à direita, passando pela porta do quarto |
+| 22,1 – 31,5 s | Quarto: aproximação do painel de ônix retroiluminado, recuo lento e fade out |
 
-Não há cortes: as mudanças de ambiente são feitas com o próprio movimento da
-câmera (giro atrás de uma parede, travessia de porta), motion blur real e leve
-tremor de drone.
+### Como o "sem cortes" funciona
 
-Os destaques de revestimento têm foco (o entorno escurece), contorno dourado,
-brilho de pedra polida varrendo a placa e uma etiqueta com o nome do material.
+- Cada foto é tratada como uma câmera real: os giros são rotações em
+  perspectiva (homografia), não um simples deslizar da imagem.
+- As trocas de ambiente acontecem atravessando portas em 3D (parede, batente
+  com profundidade e o próximo ambiente visto pelo vão), com a câmera
+  inclinando nas curvas como um drone.
+- Motion blur real (obturador de 180°), bloom nas luzes, tom quente de cinema,
+  vinheta e grão de filme.
 
 ## Como assistir
 
-Abra o `index.html` no navegador. Para usar o botão **Exportar vídeo**, sirva
-a pasta por um servidor local (o navegador bloqueia a leitura do canvas em
+Abra o `index.html` no navegador. Para usar o botão **Exportar vídeo**, sirva a
+pasta por um servidor local (o navegador bloqueia a leitura do canvas em
 `file://`):
 
 ```bash
 npx serve .
-# abra http://localhost:3000
 ```
 
-O botão **Exportar vídeo** renderiza quadro a quadro e baixa um MP4 (H.264) no
-Chrome/Edge, ou WebM (VP9) nos navegadores sem H.264.
+O botão gera MP4 (H.264) no Chrome/Edge, ou WebM (VP9) nos navegadores sem H.264.
 
 ## Renderizar o MP4 pela linha de comando
 
@@ -52,24 +54,20 @@ npm run stills -- 3,12,25 # PNGs de quadros específicos em video/stills/
 
 Tudo fica em `src/tour.js`:
 
-- `MATERIALS`: textos das etiquetas (nome do revestimento e descrição).
-- `SHOTS`: para cada ambiente, a foto, os keyframes da câmera `[tempo, x, y, zoom]`
-  e os destaques (`poly` = contorno da placa em pixels da foto, `label` = posição
-  da etiqueta na tela).
-- `TIMELINE`: ordem das cenas e transições (`entrance`, `shot`, `whip`, `portal`).
-- `CHAPTERS` e `END_T0`: títulos dos ambientes e início do encerramento.
-
-Para trocar uma foto, substitua o arquivo em `assets/` e ajuste o `poly` do
-destaque correspondente.
+- `SHOTS`: foto de cada ambiente e keyframes da câmera `[tempo, x, y, zoom]`
+  (x/y = ponto da foto para onde a câmera olha).
+- `TIMELINE`: ordem das cenas e passagens (`entrance`, `shot`, `door`), com o
+  lado do giro (`dir`) e o estilo da porta (`glass`, `black`, `wood`).
+- `DOOR`, `WALL`, `FAC`: geometria das passagens e da fachada (em milímetros).
 
 ## Estrutura
 
 ```
-index.html          player (16:9) com reprodução, navegação e exportação
-src/tour.js         motor do vídeo: câmera, cenas, transições e destaques
-src/marble.js       textura procedural de mármore Nero (fachada)
+index.html          player 16:9 com reprodução, navegação e exportação
+src/tour.js         motor do vídeo: câmera, projeção, passagens, pós-produção
+src/marble.js       textura procedural de mármore (fachada)
 src/player.js       controles do player e exportação (WebCodecs)
 src/vendor/         mp4-muxer e webm-muxer (MIT)
 tools/render.mjs    renderização em MP4 via Playwright + ffmpeg
-assets/             fotos dos ambientes e fontes (Jost, Cormorant Garamond, OFL)
+assets/             fotos dos ambientes
 ```

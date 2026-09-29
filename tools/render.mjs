@@ -82,7 +82,7 @@ if (stills) {
     [
       '-y', '-loglevel', 'error',
       '-f', 'image2pipe', '-c:v', 'mjpeg', '-framerate', String(info.fps), '-i', '-',
-      '-c:v', 'libx264', '-preset', 'slow', '-crf', '18', '-pix_fmt', 'yuv420p',
+      '-c:v', 'libx264', '-preset', 'slow', '-crf', '21', '-pix_fmt', 'yuv420p',
       '-movflags', '+faststart', out,
     ],
     { stdio: ['pipe', 'inherit', 'inherit'] }
